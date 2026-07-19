@@ -28,9 +28,9 @@ If you wanna enter more than one word pur it between "Marks"
 | myline kill [force] | Kills the Python Programm, by adding force it dont ask if it should check for unsaved changes |
 
 ## Version History
-# 1.1.0
+### 1.1.0
 *In Progress*
-# v1.0.0
+### v1.0.0
 The first Version of MyLine with some basic Features.
 
 ## License
