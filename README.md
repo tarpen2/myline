@@ -3,10 +3,11 @@ MyLine is my own command-line-tool
 
 ## Get startet
 1. Download all files from github.com/hoffmann-paul/myline
-2. Open myline.py in an editor
-3. Setup your filepaths for the files
-4. Save the file
-5. Open myline.py to Start MyLine
+2. Install everything in the requirements.txt
+3. Open myline.py in an editor
+4. Setup your filepaths for the files
+5. Save the file
+6. Open myline.py to Start MyLine
 
 For a list of all commands type: `myline help`
 
