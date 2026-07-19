@@ -1,0 +1,289 @@
+import json
+import shlex
+import socket
+import threading
+from scapy.all import ARP
+import asyncio
+from bleak import BleakScanner
+import datetime
+
+# Method Keywords:
+# GET - - - for getting one a special Value from the data
+# HEAD - - - for getting multiple Values or a list from the data
+# POST - - - for confirm changes
+# WRITE - - - for applying temporary changes
+# REQUEST - - - for request a input from the user
+
+# New Commands:
+# data GET i "{parameter}" "{value}"
+# data HEAD {i} {raw}
+# data s
+# net pg {url} {port}
+# net GET ip
+# ble HEAD devs {raw} {loop}
+# kill myline
+# myline help
+
+def Gprint(string):
+    print(f"\033[32m{string}")
+
+def GGprint(string):
+    print(f"\033[0;42m{string}\033[0m")
+
+def RRprint(string):
+    print(f"\033[0;41m{string}\033[0m")
+
+def Rprint(string):
+    print(f"\033[31m{string}")
+
+def Bprint(string):
+    print(f"\033[34m{string}")
+
+def Wprint(string):
+    print(f"\033[0m{string}")
+
+def YYprint(string):
+    print(f"\033[0;43m{string}\033[0m")
+
+def Yprint(string):
+    print(f"\033[33m{string}")
+
+Wprint("Started MyLine...")
+
+try:
+    with open('Datensätze/data.json', 'r') as file:
+        data = json.load(file)
+    with open('cmddata.json', 'r') as file:
+        saves = json.load(file)
+    with open('company_ids.json', 'r') as file:
+        company_ids_raw = json.load(file)
+
+    company_ids = {entry["code"]: entry["name"] for entry in company_ids_raw}
+    Gprint("All Source Files loaded")
+except Exception:
+    Rprint("An Error corrupted while trying reading source files")
+
+Wprint("Type \"myline help\" for commands")
+
+known_devices = {}
+for entry in saves:
+    for name, info in entry.get("BLE-Adresse", {}).items():
+        addr = info.get("adress", "")
+
+        if isinstance(addr, str):
+            addr_list = [addr] if addr else []
+        elif isinstance(addr, list):
+            addr_list = addr
+        else:
+            addr_list = []
+
+        for a in addr_list:
+            if a:
+                known_devices[a.lower()] = name
+
+def resolve_manufacturer(manufacturer_data):
+    for company_id in manufacturer_data:
+        if company_id in company_ids:
+            return company_ids[company_id]
+    return None
+
+def test_connection(host="8.8.8.8", port=53, timeout=3):
+            try:
+                socket.setdefaulttimeout(timeout)
+                socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+                Gprint(f"Success for pinging {host} on {port}")
+            except Exception as e:
+                Rprint(f"can't reach {host} error: {e}")
+
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+    except Exception:
+        local_ip = "127.0.0.1"
+    finally:
+        s.close()
+        
+    if local_ip == "127.0.0.1":
+        return False
+    
+    return local_ip
+
+async def scan(time, show_none=False):
+    devices = await BleakScanner.discover(timeout=time, return_adv=True)
+    for address, (device, adv_data) in devices.items():
+        try:
+            name = device.name
+        except Exception:
+            name = None
+
+        if name is not None or show_none:
+            now = datetime.datetime.now()
+            line = f"[{now.time()}]  {name}   {adv_data.local_name}   {adv_data.rssi}   {adv_data.tx_power}   {address}"
+
+            manufacturer = resolve_manufacturer(adv_data.manufacturer_data)
+            if manufacturer:
+                line += f"   ({manufacturer})"
+
+            known_name = known_devices.get(address.lower())
+            if known_name:
+                Yprint(f"{line}   <<<  {known_name}")
+            else:
+                Wprint(line)
+
+def wait_for_stop(stop_event):
+    input() 
+    stop_event.set()
+
+while True:
+    Bprint("@MyLine v1.0.0 >>>")
+    raw = input()
+
+    cmd = shlex.split(raw)
+    cmd.append("")
+    cmd.append("")
+    cmd.append("")
+    cmd.append("")
+
+    if cmd == []:
+        RRprint(f">>{raw}<< isnt't a vaild command")
+    else:
+        if cmd[0] == "data":
+            if cmd[1] == "GET":
+                if cmd[2] == "i":
+                    parameter = cmd[3]
+                    value = cmd[4]
+                    found = False
+                    try:
+                        for i in data:
+                            if i[parameter] == value:
+                                found = True
+                                Gprint("found >>\"" + parameter + "\" == " + "\"" + str(value) + "\"<< under index " + str(data.index(i)))
+                            else:
+                                try:
+                                    if i[parameter] == int(value):
+                                        found = True
+                                        Gprint("found >>\"" + parameter + "\" == " + "\"" + str(value) + "\"<< under index " + str(data.index(i)))
+                                    else:
+                                        if not found:
+                                            found = False
+                                except Exception:
+                                    continue
+                        if not found:
+                            Rprint("nothing found under >>\"" + parameter + "\" == " + "\"" + str(value) + "\"")
+                    except KeyError:
+                        Rprint("There is no parameter called >>" + parameter +"<<")
+                else:
+                    RRprint(f">>{raw}<< isnt't a vaild command")
+            elif cmd[1] == "HEAD":
+                index = int(cmd[2])
+                flags = cmd[3:]
+                try:
+                    if "raw" in flags:
+                        for i in data[int(index)]:
+                            if str(data[int(index)][i]) != "":
+                                if data[int(index)][i] != 0:
+                                    if data[int(index)][i] != {}:
+                                        if data[int(index)][i] != []:
+                                            m = i + " >>> " + str(data[int(index)][i]) 
+                                            GGprint(m)
+                                        else:
+                                            m = i + " >>> " + str(data[int(index)][i]) 
+                                            RRprint(m)
+                                    else:
+                                        m = i + " >>> " + str(data[int(index)][i]) 
+                                        RRprint(m)
+                                else:
+                                    m = i + " >>> " + str(data[int(index)][i]) 
+                                    RRprint(m)
+                            else:
+                                m = i + " >>> " + str(data[int(index)][i]) 
+                                RRprint(m)
+
+                    else:
+                        for i in data[int(index)]:
+                            if str(data[int(index)][i]) != "":
+                                if data[int(index)][i] != 0:
+                                    m = i + " >>> " + str(data[int(index)][i])
+                                    GGprint(m)
+                except ValueError:
+                    RRprint("Index muss be and Integer")
+                except IndexError:
+                    RRprint("This Index is out of Range")
+            elif cmd[1] == "s":
+                for i in data[0]:
+                    Wprint(i)
+            else:
+                RRprint(f">>{raw}<< isnt't a vaild command")
+        elif cmd[0] == "net":
+            if cmd[1] == "pg":
+                url = cmd[2]
+                port = int(cmd[3])
+
+                test_connection(url, port)
+            elif cmd[1] == "GET":
+                if cmd[2] == "ip":
+                    ip = get_local_ip()
+                    if ip != False:
+                        Gprint(ip)
+                    else:
+                        Rprint("No active connection found")
+                else:
+                    RRprint(f">>{raw}<< isnt't a vaild command")
+            else:
+                RRprint(f">>{raw}<< isnt't a vaild command")
+        elif cmd[0] == "ble":
+            if cmd[1] == "HEAD":
+                if cmd[2] == "devs":
+                    if cmd[3] == "raw":
+                        show_none = True
+                    else:
+                        show_none = False
+                    
+                    if cmd[3] == "loop" or cmd[4] == "loop":
+                        stop_event = threading.Event()
+                        listener = threading.Thread(target=wait_for_stop, args=(stop_event,), daemon=True)
+                        listener.start()
+
+                        while not stop_event.is_set():
+                            asyncio.run(scan(1.0, show_none))
+                            Wprint("")
+                    else:
+                        asyncio.run(scan(5.0, show_none))
+                else:
+                    RRprint(f">>{raw}<< isnt't a vaild command")
+            else:
+                RRprint(f">>{raw}<< isnt't a vaild command")
+        elif cmd[0] == "kill":
+            if cmd[1] == "myline":
+                Rprint("Killing MyLine")
+                quit()
+            else:
+                RRprint(f">>{raw}<< isnt't a vaild command")
+        elif cmd[0] == "myline":
+            if cmd[1] == "help":
+                YYprint("All Commands:")
+                YYprint("data GET i {parameter} {value}")
+                YYprint("data HEAD {i} {raw}")
+                YYprint("data s")
+                YYprint("net pg {url} {port}")
+                YYprint("ble HEAD devs {raw} {loop}")
+                YYprint("myline help")
+                YYprint("kill myline")
+            else:
+                RRprint(f">>{raw}<< isnt't a vaild command")
+        else:
+            RRprint(f">>{raw}<< isnt't a vaild command")
+
+    Wprint("")
+    Wprint("")
+
+# data GET i "{parameter}" "{value}"
+# data HEAD {i} {raw}
+# data s
+# net pg {url} {port}
+# net GET ip
+# ble HEAD devs {raw} {loop}
+# kill myline
+# myline help
