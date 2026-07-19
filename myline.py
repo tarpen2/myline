@@ -17,6 +17,8 @@ import datetime
 # New Commands:
 # data GET i "{parameter}" "{value}"
 # data HEAD {i} {raw}
+# data WRITE {i} "{parameter}" "{value}"
+# data POST
 # data s
 # net pg {url} {port}
 # net GET ip
@@ -140,15 +142,22 @@ while True:
     Bprint("@MyLine v1.0.0 >>>")
     raw = input()
 
+    cmd = []
     cmd = shlex.split(raw)
     cmd.append("")
     cmd.append("")
     cmd.append("")
     cmd.append("")
+    cmd.append("")
+    cmd.append("")
+    cmd.append("")
+    cmd.append("")
+    cmd.append("")
+    cmd.append("")
+    cmd.append("")
+    cmd.append("")
 
-    if cmd == []:
-        RRprint(f">>{raw}<< isnt't a vaild command")
-    else:
+    try:
         if cmd[0] == "data":
             if cmd[1] == "GET":
                 if cmd[2] == "i":
@@ -211,6 +220,17 @@ while True:
                     RRprint("Index muss be and Integer")
                 except IndexError:
                     RRprint("This Index is out of Range")
+            elif cmd[1] == "WRITE":
+                index = int(cmd[2])
+                parameter = cmd[3]
+                value = cmd[4]
+                data[index][parameter] = value
+            elif cmd[1] == "POST":
+                try:
+                    with open('Datensätze/data.json', 'w') as file:
+                        json.dump(data, file)
+                except Exception:
+                    RRprint("Can't POST data as data.json")
             elif cmd[1] == "s":
                 for i in data[0]:
                     Wprint(i)
@@ -266,6 +286,8 @@ while True:
                 YYprint("All Commands:")
                 YYprint("data GET i {parameter} {value}")
                 YYprint("data HEAD {i} {raw}")
+                YYprint("data WRITE {i} \"{parameter}\" \"{value}\"")
+                YYprint("data POST")
                 YYprint("data s")
                 YYprint("net pg {url} {port}")
                 YYprint("ble HEAD devs {raw} {loop}")
@@ -275,6 +297,8 @@ while True:
                 RRprint(f">>{raw}<< isnt't a vaild command")
         else:
             RRprint(f">>{raw}<< isnt't a vaild command")
+    except Exception:
+        RRprint("Something went wrong")
 
     Wprint("")
     Wprint("")
