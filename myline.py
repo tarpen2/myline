@@ -290,6 +290,9 @@ while True:
                 RRprint(f">>{raw}<< isnt't a vaild command")
         elif cmd[0] == "myline":
             if cmd[1] == "help":
+                YYprint("For Explanations visit the Github page:")
+                YYprint("github.com/hoffmann-paul/myline/blob/main/README.md")
+                YYprint("")
                 YYprint("All Commands:")
                 YYprint("data GET i {parameter} {value}")
                 YYprint("data HEAD {i} {raw}")
