@@ -7,12 +7,10 @@ import asyncio
 from bleak import BleakScanner
 import datetime
 
-# Method Keywords:
-# GET - - - for getting one a special Value from the data
-# HEAD - - - for getting multiple Values or a list from the data
-# POST - - - for confirm changes
-# WRITE - - - for applying temporary changes
-# REQUEST - - - for request a input from the user
+# SETUP VARIABLES
+file_cmddata_json = 'cmddata.json'
+file_data_json = 'Datensätze/data.json'
+file_company_ids_json = 'company_ids.json'
 
 def _prefix():
     now = datetime.datetime.now()
@@ -54,11 +52,11 @@ Wprint("Started MyLine...")
 Wprint("")
 
 try:
-    with open('Datensätze/data.json', 'r') as file:
+    with open(file_data_json, 'r') as file:
         data = json.load(file)
-    with open('cmddata.json', 'r') as file:
+    with open(file_cmddata_json, 'r') as file:
         saves = json.load(file)
-    with open('company_ids.json', 'r') as file:
+    with open('file_company_ids_json', 'r') as file:
         company_ids_raw = json.load(file)
 
     company_ids = {entry["code"]: entry["name"] for entry in company_ids_raw}
@@ -235,7 +233,7 @@ while True:
                 data[index][parameter] = value
             elif cmd[1] == "POST":
                 try:
-                    with open('Datensätze/data.json', 'w') as file:
+                    with open(file_data_json, 'w') as file:
                         json.dump(data, file)
                 except Exception:
                     RRprint("Can't POST data as data.json")
@@ -295,17 +293,17 @@ while True:
                 YYprint("")
                 YYprint("All Commands:")
                 YYprint("data GET i {parameter} {value}")
-                YYprint("data HEAD {i} {raw}")
+                YYprint("data HEAD {i} [raw]")
                 YYprint("data WRITE {i} \"{parameter}\" \"{value}\"")
                 YYprint("data POST")
                 YYprint("data inspect struc")
                 YYprint("data inspect count")
                 YYprint("net pg {url} {port}")
-                YYprint("ble HEAD devs {raw} {loop}")
+                YYprint("ble HEAD devs [raw] [loop]")
                 YYprint("myline help")
                 YYprint("myline info")
                 YYprint("myline check changes")
-                YYprint("myline kill {force}")
+                YYprint("myline kill [force]")
             elif cmd[1] == "info":
                 Wprint("My Line")
                 Wprint("github.com/hoffmann-paul/myline")
@@ -317,7 +315,7 @@ while True:
                 Wprint("THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.")
             elif cmd[1] == "check":
                 if cmd[2] == "changes":
-                    with open('Datensätze/data.json', 'r') as file:
+                    with open(file_data_json, 'r') as file:
                         saved_data = json.load(file)
                     if saved_data != data:
                         Rprint("Unsaved Changes between data and data.json")
@@ -331,7 +329,7 @@ while True:
                     Bprint("[Y/N]")
                     answer = input()
                     if answer == "Y" or answer == "y":
-                        with open('Datensätze/data.json', 'r') as file:
+                        with open(file_data_json, 'r') as file:
                             saved_data = json.load(file)
                         if saved_data != data:
                             Rprint("Unsaved Changes between data and data.json")
