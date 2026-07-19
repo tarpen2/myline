@@ -14,18 +14,6 @@ import datetime
 # WRITE - - - for applying temporary changes
 # REQUEST - - - for request a input from the user
 
-# New Commands:
-# data GET i "{parameter}" "{value}"
-# data HEAD {i} {raw}
-# data WRITE {i} "{parameter}" "{value}"
-# data POST
-# data s
-# net pg {url} {port}
-# net GET ip
-# ble HEAD devs {raw} {loop}
-# kill myline
-# myline help
-
 def Gprint(string):
     print(f"\033[32m{string}")
 
@@ -292,7 +280,18 @@ while True:
                 YYprint("net pg {url} {port}")
                 YYprint("ble HEAD devs {raw} {loop}")
                 YYprint("myline help")
+                YYprint("myline check changes")
                 YYprint("kill myline")
+            elif cmd[1] == "check":
+                if cmd[2] == "changes":
+                    with open('Datensätze/data.json', 'r') as file:
+                        saved_data = json.load(file)
+                    if saved_data != data:
+                        Rprint("Unsaved Changes between data and data.json")
+                    else:
+                        Gprint("No Unsaved Changes")
+                else:
+                    RRprint(f">>{raw}<< isnt't a vaild command")
             else:
                 RRprint(f">>{raw}<< isnt't a vaild command")
         else:
@@ -302,12 +301,3 @@ while True:
 
     Wprint("")
     Wprint("")
-
-# data GET i "{parameter}" "{value}"
-# data HEAD {i} {raw}
-# data s
-# net pg {url} {port}
-# net GET ip
-# ble HEAD devs {raw} {loop}
-# kill myline
-# myline help
