@@ -24,6 +24,7 @@ If you wanna enter more than one word pur it between "Marks"
 | `myline help c` | Shows a list of all Commands |
 | `myline help info` | Shows Link to GitHub page and MIT Licence |
 | `myline check changes` | Checks if there are some unsaved changes |
+| `myline restore changes` | Restore last Sessions Changes |
 | `myline kill check` | Checks if there are some unsaved changes, if yes than nothing happens, but if there are no unseved changes MyLine is killed |
 | `myline kill force` | Kills MyLine |
 
