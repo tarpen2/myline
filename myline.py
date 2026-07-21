@@ -294,17 +294,17 @@ def myline_kill_force(flags):
 commands = {
     "data": {
         "GET": {
-            "i": data_get_i # i index
+            "i": data_get_i 
         },
         "HEAD": {
             "raw": data_head_raw,
-            "f": data_head_f #f filled
+            "f": data_head_f 
         },
         "WRITE": {
-            "t": data_write_t # mby expant from t= temp. and p= wirte and instant post
+            "t": data_write_t
         },
         "POST": {
-            "a": data_post_a # a all
+            "a": data_post_a
         },
         "inspect": {
             "struc": data_inspect_struc,
@@ -313,7 +313,7 @@ commands = {
     },
     "net": {
         "pg": {
-            "uop": net_pg_uop # Url On Port
+            "uop": net_pg_uop 
         }
     },
     "ble": {
