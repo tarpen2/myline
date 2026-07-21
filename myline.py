@@ -307,18 +307,22 @@ while True:
     # Dispatcher
     try:
         parts = shlex.split(raw)
-        keyword = parts[0]
-        sub_keyword = parts[1]
-        sub_sub_keyword = parts[2]
-        flags = parts[3:]
-        flags.append("")
-        flags.append("")
-        flags.append("")
-        flags.append("")
-
-        if keyword in commands and sub_keyword in commands[keyword] and sub_sub_keyword in commands[keyword][sub_keyword]:
-            commands[keyword][sub_keyword][sub_sub_keyword](flags)
+        if not parts:
+            continue
         else:
-            RRprint(f">>{raw}<< isnt't a vaild command")
+            keyword = parts[0]
+            sub_keyword = parts[1]
+            sub_sub_keyword = parts[2]
+            flags = parts[3:]
+            flags.append("")
+            flags.append("")
+            flags.append("")
+            flags.append("")
+
+            if keyword in commands and sub_keyword in commands[keyword] and sub_sub_keyword in commands[keyword][sub_keyword]:
+                commands[keyword][sub_keyword][sub_sub_keyword](flags)
+            else:
+                RRprint(f">>{raw}<< isnt't a vaild command")
     except Exception as e:
             RRprint(f"Unexpected Error: {e}")
+    Wprint("")
