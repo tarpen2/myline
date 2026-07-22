@@ -422,7 +422,7 @@ def data_card_new(flags):
 
 def data_card_delete(flags):
     data.pop(int(flags[0]))
-    Rprint("Poped Data Record at index flags[0]")
+    Rprint(f"Poped Data Record at index {flags[0]}")
 
 commands = {
     "data": {
