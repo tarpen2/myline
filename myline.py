@@ -174,10 +174,10 @@ for entry in saves:
             if a:
                 known_devices[a.lower()] = name
 
-def send_json(file_path, object):
+def send_json(file_path, thing_to_dump_man_these_variable_names_sucks_to_hard_who_in_the_world_had_this_motherfucking_idea_i_just_wanted_to_create_a_variable_named_object_and_this_silly_coding_language_thinks_it_can_forbit_me_to_do_this_i_hate_my_life_i_debugged_for_this_simple_ass_shit_thing_at_least_an_hour):
     try:
         with open(file_path, 'w') as file:
-            json.dump(object, file, indent=4)
+            json.dump(thing_to_dump_man_these_variable_names_sucks_to_hard_who_in_the_world_had_this_motherfucking_idea_i_just_wanted_to_create_a_variable_named_object_and_this_silly_coding_language_thinks_it_can_forbit_me_to_do_this_i_hate_my_life_i_debugged_for_this_simple_ass_shit_thing_at_least_an_hour, file, indent=4)
             return True
     except Exception:
             return False
