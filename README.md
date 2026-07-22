@@ -5,7 +5,7 @@ MyLine is my own command-line tool.
 1. Download all files from github.com/hoffmann-paul/myline
 2. Install everything in the requirements.txt
 3. Run MyLine: `python myline.py`
-   - By default it looks for the data file at `Datensätze/data.json`
+   - By default it looks for the data file at `storage/data.json`
    - To use a different path, pass `--data-file`, e.g. `python myline.py --data-file path/to/data.json`
 For a list of all commands type: `myline help c`
 
