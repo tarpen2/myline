@@ -173,6 +173,14 @@ for entry in saves:
             if a:
                 known_devices[a.lower()] = name
 
+def send_json(file_path, object):
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(object, file, indent=4)
+            return True
+    except Exception:
+            return False
+
 def resolve_manufacturer(manufacturer_data):
     for company_id in manufacturer_data:
         if company_id in company_ids:
